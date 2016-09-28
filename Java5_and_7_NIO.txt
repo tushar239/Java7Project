@@ -1,0 +1,249 @@
+Java 7 features
+http://www.oracle.com/technetwork/java/javase/jdk7-relnotes-418459.html
+
+Apart from Generics, enhance for loop etc, Java 5 have given us java.util.Concurrent package and java.nio package also.
+
+http://tutorials.jenkov.com/java-util-concurrent/index.html
+- Different types of BlockingQueues
+- ConcurrentMap
+- ExecutorService, ScheduledExecutorService and ThreadPoolExecutor with Runnable/Callable+Future
+- Java Fork and Join using ForkJoinPool
+- Exchanger
+- CountDownLatch
+- Lock and ReadWriteLock
+- AtomicBoolean, AtomicInteger, AtomicLong, AtomicIntegerArray, AtomicLongArray, AtomicReference etc.
+
+Java 7 NIO2
+    Java 7 has added some more things to Java 5 NIO.
+
+    https://docs.oracle.com/javase/tutorial/essential/io/fileio.html
+    https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)#JDK_7_and_NIO.2
+
+    JDK 7 includes a java.nio.file package which, with the java.nio.file.Path class (also new to JDK 7), among other features, provides extended capabilities for filesystem tasks, e.g. can work with symbolic/hard links and dump big directory listings into buffers more quickly than the old File class does. The java.nio.file package and its related package, java.nio.file.attribute, provide comprehensive support for file I/O and for accessing the file system. A zip file system provider is also available in JDK 7.
+
+    Java 7 has introduced two main classes in java.nio.file package
+    - Path
+    - Files
+        This is kind of utility class having bunch of static methods to do all I/O operations.
+        e.g. Files.newInputStream(path)
+             Files.newOutputStream(path)
+             Files.read(inputStream)
+             Files.readAllLines(path)
+             Files.lines(path)  --- returns a Stream<String>.
+                Unlike to readAllLines(Path), lines(Path) doesn't read all lines from path together. It provides you a stream.
+                https://www.mkyong.com/java8/java-8-stream-read-a-file-line-by-line/
+
+
+
+Java 5 nio tutorial
+http://tutorials.jenkov.com/java-nio/index.html
+
+Difference between nio and io
+-----------------------------
+http://java.dzone.com/articles/java-nio-vs-io
+
+Stream Oriented vs. Buffer Oriented-
+
+The first big difference between Java NIO and IO is that IO is stream oriented, where NIO is buffer oriented. So, what does that mean?
+Java IO being stream oriented means that you read one or more bytes at a time, from a stream. What you do with the read bytes is up to you. They are not cached anywhere. Furthermore, you cannot move forth and back in the data in a stream. If you need to move forth and back in the data read from a stream, you will need to cache it in a buffer first.
+Java NIO's buffer oriented approach is slightly different. Data is read into a buffer from which it is later processed. You can move forth and back in the buffer as you need to. This gives you a bit more flexibility during processing. However, you also need to check if the buffer contains all the data you need in order to fully process it. And, you need to make sure that when reading more data into the buffer, you do not overwrite data in the buffer you have not yet processed.
+
+
+Blocking vs. Non-blocking IO -
+
+Java IO's various streams are blocking. That means, that when a thread invokes a read() or write(), that thread is blocked until there is some data to read, or the data is fully written. The thread can do nothing else in the meantime.
+Java NIO's non-blocking mode enables a thread to request reading data from a channel, and only get what is currently available, or nothing at all, if no data is currently available. Rather than remain blocked until data becomes available for reading, the thread can go on with something else.
+The same is true for non-blocking writing. A thread can request that some data be written to a channel, but not wait for it to be fully written. The thread can then go on and do something else in the mean time.
+What threads spend their idle time on when not blocked in IO calls, is usually performing IO on other channels in the meantime. That is, a single thread can now manage multiple channels of input and output.
+
+
+Stream oriented:
+        If you read code of BufferedReader's readLine() method, it actually reads byte by byte or char by char from the stream and fills up StringBuffer and returns stringBuffer.toString().
+        It blocks the thread until entire line is read.
+
+Channel and Buffer oriented:
+        in nio, you use channel to read data from file and put it into fixed size buffer.
+        It is not necessary that first time filled up buffer will contain entire line. It will just contain the data of fixed bytes.
+        It's your responsibility to check whether buffer has enough required data that you want. If not, you clear the buffer and fill up from the channel again.
+        This is a kind of non-blocking because reading a chunk of fixed size data into buffer takes lesser time than reading it byte by byte from the stream and buffering it.
+
+        https://dzone.com/articles/java-nio-vs-io
+
+
+
+http://tutorials.jenkov.com/java-nio/index.html
+
+    IO -
+    1. You always work with streams (byte stream or character stream).
+    2. These streams are always one-way (either read or write). Use InputStream/Reader for reading and OutputStream/Writer for writing.
+    3. IO is a sychronous process
+
+    NIO -
+    NIO is based on three basic concepts
+        1. Channel
+        2. Buffer
+        3. Selector
+
+    You never work with streams directly. You use channels and buffers. You read data from channel and write it to buffer and vice-versa.
+    If you have multiple channels open, use selector to select it one of the channel and work with it.
+    Channels can be read and written asynchronously.
+
+    Types of Channel
+        FileChannel
+        DatagramChannel
+        SocketChannel
+        ServerSocketChannel
+
+    As you can see, these channels cover UDP + TCP network IO, and file IO.
+
+    Types of Buffer
+        ByteBuffer
+        CharBuffer
+        DoubleBuffer
+        FloatBuffer
+        IntBuffer
+        LongBuffer
+        ShortBuffer
+
+    java.nio.Buffer
+    ---------------
+    http://docs.oracle.com/javase/7/docs/api/java/nio/Buffer.html
+
+    Buffer has 4 important variables-
+        position - index from which data should be read at written
+        limit - index till which data can be read
+        capacity - initial capacity of the buffer
+        mark = It is just a variable that can be used to stored position's value intermittently. mark() method is used to store position's value into 'mark' variable and reset() is used store mark's value into position.
+
+        position, limit and capacity are more important to understand.
+
+        0 <= mark <= position <= limit <= capacity
+
+        A newly-created buffer always has a
+        position = 0
+        mark = undefined(-1).
+        The initial limit = 0, or it may be some other value that depends upon the type of the buffer and the manner in which it is constructed.
+
+    Buffer methods
+        put(...) --- writes one byte/char/double/float/int/long/short
+        get() --- reading one byte/char/double/float/int/long/short
+
+        flip() --- sets limit=position, position=0 and mark=-1. Converts buffer from writing to reading mode.
+        rewind() --- sets position=0 and mark=-1. Converts buffer to re-reading mode. It doesn't touch the limit (just resets position to 0)
+
+        position(value) --- manually set the position
+        limit(value) --- manually set the limit
+
+        clear() --- sets  position=0, limit=capacity and mark=-1.
+                    Clears the whole buffer.
+                    The data in the Buffer is not cleared. Only the markers telling where you can write data into the Buffer are.
+                    If there is any unread data in the Buffer when you call clear() that data will be "forgotten", meaning you no longer have any markers telling what data has been read, and what has not been read.
+        compact() --- sets position=limit-position, limit=capacity, mark=-1.
+                      Clears the data which you have already read.
+                      Copies all unread data to the beginning of the Buffer. It sets position to right after the last unread element
+
+
+        mark() --- sets mark=position
+        reset() --- sets position=mark
+
+
+
+    Marking and resetting -
+
+        You can mark a given position in a Buffer by calling the Buffer.mark() method. You can then later reset the position back to the marked position by calling the Buffer.reset() method.
+
+        buffer.mark();
+
+        //call buffer.get() a couple of times, e.g. during parsing.
+
+        buffer.reset();  //set position back to mark.
+
+        The mark is not always defined, but when it is defined it is never negative and is never greater than the position.
+        If the mark is defined then it is discarded when the position or the limit is adjusted to a value smaller than the mark.
+        If the mark is not defined then invoking the reset method causes an InvalidMarkException to be thrown.
+
+
+    Clearing, flipping, and rewinding -
+
+        In addition to methods for accessing the position, limit, and capacity values and for marking and resetting, this class also defines the following operations upon buffers:
+        clear() makes a buffer ready for a new sequence of channel-read or relative put operations: It sets the limit to the capacity and the position to zero.
+        flip() makes a buffer ready for a new sequence of channel-write or relative get operations: It sets the limit to the current position and then sets the position to zero.
+        rewind() makes a buffer ready for re-reading the data that it already contains: It leaves the limit unchanged and sets the position to zero.
+
+    Read-only buffers -
+        Every buffer is readable, but not every buffer is writable. The mutation methods of each buffer class are specified as optional operations that will throw a ReadOnlyBufferException when invoked upon a read-only buffer. A read-only buffer does not allow its content to be changed, but its mark, position, and limit values are mutable. Whether or not a buffer is read-only may be determined by invoking its isReadOnly method.
+
+    Thread safety -
+
+        Buffers are not safe for use by multiple concurrent threads. If a buffer is to be used by more than one thread then access to the buffer should be controlled by appropriate synchronization.
+
+    Invocation chaining -
+        Methods in this class that do not otherwise have a value to return are specified to return the buffer upon which they are invoked. This allows method invocations to be chained; for example, the sequence of statements
+
+         b.flip();
+         b.position(23);
+         b.limit(42);
+
+          can be replaced by the single, more compact statement
+
+         b.flip().position(23).limit(42);
+
+    equals() and compareTo() -
+
+        It is possible to compare two buffers using equals() and compareTo().
+
+        equals()
+
+        Two buffers are equal if:
+
+        - They are of the same type (byte, char, int etc.)
+        - They have the same amount of remaining bytes, chars etc. in the buffer.
+        - All remaining bytes, chars etc. are equal.
+        As you can see, equals only compares part of the Buffer, not every single element inside it.
+        In fact, it just compares the remaining elements in the Buffer.
+
+        compareTo()
+
+        The compareTo() method compares the remaining elements (bytes, chars etc.) of the two buffers, for use in e.g. sorting routines. A buffer is considered "smaller" than another buffer if:
+
+        The first element which is equal to the corresponding element in the other buffer, is smaller than that in the other buffer.
+        All elements are equal, but the first buffer runs out of elements before the second buffer does (it has fewer elements).
+
+    Java NIO Scatter / Gather
+    -------------------------
+    http://tutorials.jenkov.com/java-nio/scatter-gather.html
+
+    Scattering
+
+        ByteBuffer header = ByteBuffer.allocate(128);
+        ByteBuffer body   = ByteBuffer.allocate(1024);
+
+        ByteBuffer[] bufferArray = { header, body };
+
+        channel.read(buffers);
+
+        Notice how the buffers are first inserted into an array, then the array passed as parameter to the channel.read() method. The read() method then writes data from the channel in the sequence the buffers occur in the array. Once a buffer is full, the channel moves on to fill the next buffer.
+        The fact that scattering reads fill up one buffer before moving on to the next, means that it is not suited for dynamically sized message parts. In other words, if you have a header and a body, and the header is fixed size (e.g. 128 bytes), then a scattering read works fine.
+
+    Gathering
+
+        ByteBuffer header = ByteBuffer.allocate(128);
+        ByteBuffer body   = ByteBuffer.allocate(1024);
+
+        //write data into buffers
+        ByteBuffer[] bufferArray = { header, body };
+
+        channel.write(buffers);
+
+        The array of buffers are passed into the write() method, which writes the content of the buffers in the sequence they are encountered in the array.
+        Only the data between position and limit of the buffers is written. Thus, if a buffer has a capacity of 128 bytes, but only contains 58 bytes, only 58 bytes are written from that buffer to the channel.
+        Thus, a gathering write works fine with dynamically sized message parts, in contrast to scattering reads.
+
+    Java NIO Channel to Channel Transfers
+    -------------------------------------
+    http://tutorials.jenkov.com/java-nio/channel-to-channel-transfers.html
+
+    In Java NIO you can transfer data directly from one channel to another, if one of the channels is a FileChannel.
+    The FileChannel class has a transferTo() and a transferFrom() method which does this for you.
+
+    See ChannelToChannelTransfer.java. You can use transferFrom()/transferTo() to copy data from one to another file.

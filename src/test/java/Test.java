@@ -5,6 +5,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class Test {
         andElement.setAnd(termsList.toArray(new TermsObject[termsList.size()]));
         ObjectMapper objectMapper = new ObjectMapper();
         //filter={"and":[{"terms":{"webId":["gmps-86th-street"]}},{"terms":{"locale":["en_US"]}}]}
-        System.out.println("filter="+objectMapper.writeValueAsString(andElement));
+        System.out.println("filter=" + objectMapper.writeValueAsString(andElement));
         System.out.println(StringEscapeUtils.escapeJava("filter=" + objectMapper.writeValueAsString(andElement)));
 
         {
@@ -59,11 +60,22 @@ public class Test {
             add(3);
             add(4);
             add(5);
-            add(5,5);
+            add(5, 5);
         }};
         System.out.println(linkedList.get(2));
 
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "a");
+        map.put("2", "b");
+        map.put("3", "c");
 
+    }
+
+    private static Date getDate(Date date) {
+        if (date != null) {
+            return new Date(date.getTime());
+        }
+        return null;
     }
 
     static class AndElement implements Cloneable {
@@ -87,9 +99,11 @@ public class Test {
         public Map<String, String[]> getTerms() {
             return terms;
         }
+
         public void setTerms(Map<String, String[]> terms) {
             this.terms = terms;
         }
+
         public void addFieldNameValues(String fieldName, String... fieldValues) {
             terms.put(fieldName, fieldValues);
         }

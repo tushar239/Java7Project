@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,13 +48,15 @@ public class InputStreamDemo {
     public static void main(String[] args) throws Exception {
 
         // http://www.tutorialspoint.com/java/io/inputstream_read.htm
-        FileInputStreamDemo();
+//        FileInputStreamDemo();
+//        System.out.println();
+//        BufferedInputStreamDemo();
+//        System.out.println();
+//        DataInputStreamDemo();
         System.out.println();
-        BufferedInputStreamDemo();
-        System.out.println();
-        DataInputStreamDemo();
-        System.out.println();
-        ObjectInputStreamDemo();
+        DataOutputStreamDemo();
+//        System.out.println();
+//        ObjectInputStreamDemo();
 
     }
 
@@ -106,17 +109,16 @@ public class InputStreamDemo {
      */
     private static void BufferedInputStreamDemo() {
         try (InputStream fis = new FileInputStream("./Java7Project/src/main/resources/text.txt");
-            BufferedInputStream bis = new BufferedInputStream(fis))
-        {
+             BufferedInputStream bis = new BufferedInputStream(fis)) {
             System.out.println("Characters printed by BufferedInputStreamDemo():");
             // read until a single byte is available
-            while(bis.available()>0)
-            {
+            while (bis.available() > 0) {
                 // read the byte and convert the integer to character
-                char c = (char)bis.read();
-                System.out.print(c);;
+                char c = (char) bis.read();
+                System.out.print(c);
+                ;
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -144,12 +146,11 @@ public class InputStreamDemo {
             System.out.println();
             */
             System.out.println("Characters printed by DataInputStreamDemo():");
-            while(dis.available() > 0) {
+            while (dis.available() > 0) {
                 byte[] buf = new byte[dis.available()];
                 dis.readFully(buf); // read the full data into the buffer
-                for (byte b:buf)
-                {
-                    char c = (char)b;
+                for (byte b : buf) {
+                    char c = (char) b;
                     System.out.print(c);
                 }
             }
@@ -157,6 +158,18 @@ public class InputStreamDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void DataOutputStreamDemo() throws IOException {
+        DataOutputStream dataOutputStream = new DataOutputStream(
+                new FileOutputStream("./Java7Project/binary.txt"));
+
+        dataOutputStream.write(45);            //byte data
+        dataOutputStream.writeInt(4545);       //int data
+        dataOutputStream.writeDouble(109.123); //double data
+
+        dataOutputStream.close();
+
     }
 
     private static void ObjectInputStreamDemo() {
@@ -177,7 +190,7 @@ public class InputStreamDemo {
 
         try {
             System.out.println("Class printed by ObjectInputStreamDemo():");
-            SomeClass someClass1 = (SomeClass)deserialize(serialize(someClass));
+            SomeClass someClass1 = (SomeClass) deserialize(serialize(someClass));
             System.out.println(someClass1.getName());
         } catch (IOException e) {
             e.printStackTrace();
@@ -186,6 +199,7 @@ public class InputStreamDemo {
         }
 
     }
+
     private static byte[] serialize(Object obj) throws IOException {
         // Serializing in ByteArray
         ByteArrayOutputStream out = new ByteArrayOutputStream();// You can serialize to file also using FileOutputStream also.
@@ -200,6 +214,7 @@ public class InputStreamDemo {
 
         return out.toByteArray();
     }
+
     private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         ObjectInputStream is = new ObjectInputStream(in);

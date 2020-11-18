@@ -11,14 +11,15 @@ import java.util.Set;
 http://stackoverflow.com/questions/11825009/what-does-enumset-really-mean
 EnumSet is a special Set type that can hold Enum values
 
-All of the elements in an enum set must come from a single enum type.
-Enum sets are represented internally as bit vectors. This representation is extremely compact and efficient.
-The space and time performance of this class should be good enough to allow its use as a high-quality, typesafe alternative to traditional <tt>int</tt>-based "bit flags."
-Even bulk operations (such as containsAll and retainAll) should run very quickly if their argument is also an enum set.
-The iterator returned by the <tt>iterator</tt> method traverses the elements in their <i>natural order</i> (the order in which the enum constants are declared).
+EnumSet class is a member of the Java Collections Framework & is not synchronized. It's a high performance set implementation, much faster than HashSet.
+All of the elements in an EnumSet must come from a single enumeration type that is specified when the set is created either explicitly or implicitly.
 
-Null elements are not permitted.  Attempts to insert a null element will throw NullPointerException.
-Attempts to test for the presence of a null element or to remove one will, however, function properly.
+- It extends AbstractSet class and implements Set Interface in Java.
+- EnumSet class is a member of the Java Collections Framework & is not synchronized.
+- It’s a high performance set implementation, much faster than HashSet.
+- All of the elements in an EnumSet must come from a single enumeration type that is specified when the set is created either explicitly or implicitly.
+- It does not allow null Objects and throws NullPointerException if we do so.
+- It uses a fail-safe iterator, so it won’t throw ConcurrentModificationException if the collection is modified while iterating.
 
 Like most collection implementations, <tt>EnumSet</tt> is not synchronized.
 If multiple threads access an enum set concurrently, and at least one of the threads modifies the set, it should be synchronized externally.
